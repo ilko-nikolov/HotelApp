@@ -1,0 +1,26 @@
+﻿<Page
+    x:Class="HotelApp.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HotelApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <NavigationView>
+            <NavigationView.MenuItems>
+                <NavigationViewItem x:Name="dashboard" Icon="Home" Content="Dashboard" Tapped="Dashboard_Tapped"/>
+                <NavigationViewItem x:Name="reservations" Icon="Edit" Content="Reservations" Tapped="Reservations_Tapped"/>
+                <NavigationViewItem x:Name="sales" Icon="Shop" Content="Sales" Tapped="Sales_Tapped"/>
+                <NavigationViewItem x:Name="seliveries" Icon="Paste" Content="Deliveries" Tapped="Deliveries_Tapped"/>
+                <NavigationViewItem x:Name="rooms" Icon="Paste" Content="Rooms" Tapped="Rooms_Tapped"/>
+            </NavigationView.MenuItems>
+
+            <Frame x:Name="MainFrame">
+                
+            </Frame>
+        </NavigationView>
+    </Grid>
+</Page>

@@ -1,0 +1,46 @@
+﻿<Page
+    x:Class="HotelApp.Rooms"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HotelApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Button x:Name="addRoomButton" Content="Add Room" HorizontalAlignment="Left" Margin="246,241,0,0" VerticalAlignment="Top" Click="AddRoomButton_ClickAsync"/>
+        <ContentDialog
+            x:Name="addRoomContentDialog"
+            Title="Add Room"
+            PrimaryButtonText="Add Room"
+            CloseButtonText="Cancel">
+            <StackPanel>
+                <TextBox x:Name="roomNumberTextBox" Header="Room number"/>
+                <TextBox x:Name="roomDefaultPriceTextBox" Header="Room default price" InputScope="CurrencyAmount"/>
+                <TextBlock Text="Room Type"/>
+                <RelativePanel>
+                    <ListBox x:Name="roomTypeListBox" Height="100" Width="220" BorderBrush="Gray" BorderThickness="1"/>
+                    <Button x:Name="addRoomTypeButton" Content="Add Room Type" RelativePanel.RightOf="roomTypeListBox" RelativePanel.AlignBottomWithPanel="True" Click="AddRoomTypeButton_ClickAsync"></Button>
+                </RelativePanel>
+            </StackPanel>
+        </ContentDialog>
+        <ContentDialog
+            x:Name="addRoomTypeContentDialog"
+            Title="Add Room Type"
+            PrimaryButtonText="Add Room Type"
+            CloseButtonText="Cancel" >
+            <StackPanel>
+                <TextBox x:Name="roomTypeTextBox" Header="Room type name"/>
+                <TextBox x:Name="singleBedsTextBox" Header="Single beds" InputScope="Number"/>
+                <TextBox x:Name="doubleBedsTextBox" Header="Double beds" InputScope="Number"/>
+                <TextBox x:Name="capacityTextBox" Header="Capacity" InputScope="Number"/>
+                <TextBox x:Name="descriptionTextBox" Header="Description" TextWrapping="Wrap" Height="100"/>
+            </StackPanel>
+
+        </ContentDialog>
+    </Grid>
+
+    
+    
+</Page>
