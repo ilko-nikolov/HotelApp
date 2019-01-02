@@ -29,28 +29,21 @@ namespace HotelApp
             this.InitializeComponent();
         }
 
-        private void Reservations_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            MainFrame.Navigate(typeof(Reservations));
-        }
-
-        private void Deliveries_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            MainFrame.Navigate(typeof(Deliveries));
-        }
-
-        private void Sales_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            MainFrame.Navigate(typeof(Sales));
-        }
-
         private void Dashboard_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            navigationView.Header = "Dashboard";
             MainFrame.Navigate(typeof(Dashboard));
+        }
+
+        private void Reservations_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            navigationView.Header = "Reservations";
+            MainFrame.Navigate(typeof(Reservations));
         }
 
         private void Rooms_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            navigationView.Header = "Rooms";
             MainFrame.Navigate(typeof(Rooms));
         }
     }

@@ -54,7 +54,7 @@ namespace HotelApp
                                 {
                                     var reservation = new CReservation();
                                     reservation.ReservationID = reader.GetInt32(0);
-                                    reservation.RoomNumber = reader.GetString(1);
+                                    reservation.Room.RoomNumber = reader.GetString(1);
                                     reservation.Price = reader.GetInt32(5);
                                     reservations.Add(reservation);
                                 }

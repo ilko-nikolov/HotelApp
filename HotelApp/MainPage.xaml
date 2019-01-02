@@ -9,12 +9,10 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <NavigationView>
+        <NavigationView x:Name="navigationView" Header="Dashboard">
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Name="dashboard" Icon="Home" Content="Dashboard" Tapped="Dashboard_Tapped"/>
                 <NavigationViewItem x:Name="reservations" Icon="Edit" Content="Reservations" Tapped="Reservations_Tapped"/>
-                <NavigationViewItem x:Name="sales" Icon="Shop" Content="Sales" Tapped="Sales_Tapped"/>
-                <NavigationViewItem x:Name="seliveries" Icon="Paste" Content="Deliveries" Tapped="Deliveries_Tapped"/>
                 <NavigationViewItem x:Name="rooms" Icon="Paste" Content="Rooms" Tapped="Rooms_Tapped"/>
             </NavigationView.MenuItems>
 
