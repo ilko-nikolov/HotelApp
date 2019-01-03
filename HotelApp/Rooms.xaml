@@ -64,7 +64,17 @@
         </ListView>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Content="Add Room" Tapped="AddRoomButton_Tapped" Margin="1"/>
-                <Button x:Name="removeRoomButton" Content="Remove selected room" Margin="1" IsEnabled="False" Tapped="RemoveRoomButton_Tapped"/>
+                <Button x:Name="removeRoomButton" Content="Remove selected room" Margin="1" IsEnabled="False">
+                    <Button.Flyout>
+                        <Flyout x:Name="removeRoomButtonFlyout">
+                            <StackPanel>
+                                <TextBlock Text="Selected room will be removed." Margin="3"/>
+                                <TextBlock Text="Do you want to continue?" Margin="3"/>
+                                <Button Content="Yes, remove room" Margin="3" Tapped="RemoveRoomButton_Tapped"/>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
             </StackPanel>
         </StackPanel>
         <ContentDialog
@@ -73,12 +83,27 @@
             PrimaryButtonText="Add Room"
             CloseButtonText="Cancel">
             <StackPanel>
-                <TextBox x:Name="roomNumberTextBox" Header="Room number"/>
-                <TextBox x:Name="roomDefaultPriceTextBox" Header="Room default price" InputScope="CurrencyAmount"/>
+                <TextBox x:Name="roomNumberTextBox" Header="Room number" PlaceholderText="201"/>
+                <TextBox x:Name="roomDefaultPriceTextBox" Header="Room default price" InputScope="CurrencyAmount" PlaceholderText="100.90"/>
                 <TextBlock Text="Room Type"/>
                 <RelativePanel>
-                    <ListBox x:Name="roomTypeListBox" Height="200" Width="220" BorderBrush="Gray" BorderThickness="1" ItemsSource="{x:Bind GetRoomTypes()}" DisplayMemberPath="RoomTypeName" SelectedValuePath="RoomTypeID"/>
-                    <Button x:Name="addRoomTypeButton" Content="Add Room Type" RelativePanel.RightOf="roomTypeListBox" RelativePanel.AlignBottomWithPanel="True" Click="AddRoomTypeButton_ClickAsync"></Button>
+                    <ListBox x:Name="roomTypeListBox" Height="200" Width="220" BorderBrush="Gray" BorderThickness="1" Margin="1" ItemsSource="{x:Bind GetRoomTypes()}" DisplayMemberPath="RoomTypeName" SelectedValuePath="RoomTypeID" SelectionChanged="RoomTypeListBox_SelectionChanged"/>
+                    <TextBlock x:Name="roomTypeInfoTextBlock" RelativePanel.RightOf="roomTypeListBox" RelativePanel.AlignTopWithPanel="True" Margin="1"></TextBlock>
+                    <StackPanel RelativePanel.RightOf="roomTypeListBox" RelativePanel.AlignBottomWithPanel="True">
+                        <Button x:Name="removeRoomTypeButton" Content="Remove Room Type" Margin="1">
+                            <Button.Flyout>
+                                <Flyout x:Name="removeRoomTypeButtonFlyout">
+                                    <StackPanel>
+                                        <TextBlock Text="Selected room type will be removed." Margin="3"/>
+                                        <TextBlock Text="Do you want to continue?" Margin="3"/>
+                                        <Button Content="Yes, remove room type" Margin="3" Tapped="removeRoomTypeButton_Tapped"/>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Button x:Name="addRoomTypeButton" Content="Add Room Type" Click="AddRoomTypeButton_ClickAsync" Margin="1"></Button>
+
+                    </StackPanel>
                 </RelativePanel>
             </StackPanel>
         </ContentDialog>
@@ -86,12 +111,12 @@
             x:Name="addRoomTypeContentDialog"
             Title="Add Room Type"
             PrimaryButtonText="Add Room Type"
-            CloseButtonText="Cancel" >
+            CloseButtonText="Cancel">
             <StackPanel>
                 <TextBox x:Name="roomTypeTextBox" Header="Room type name"/>
-                <TextBox x:Name="singleBedsTextBox" Header="Single beds" InputScope="Number"/>
-                <TextBox x:Name="doubleBedsTextBox" Header="Double beds" InputScope="Number"/>
-                <TextBox x:Name="capacityTextBox" Header="Capacity" InputScope="Number"/>
+                <TextBox x:Name="singleBedsTextBox" Header="Single beds" InputScope="Number" BeforeTextChanging="TextBox_DigitsOnly"/>
+                <TextBox x:Name="doubleBedsTextBox" Header="Double beds" InputScope="Number" BeforeTextChanging="TextBox_DigitsOnly"/>
+                <TextBox x:Name="capacityTextBox" Header="Capacity" InputScope="Number" BeforeTextChanging="TextBox_DigitsOnly"/>
                 <TextBox x:Name="descriptionTextBox" Header="Description" TextWrapping="Wrap" Height="100"/>
             </StackPanel>
 

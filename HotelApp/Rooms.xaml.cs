@@ -32,13 +32,15 @@ namespace HotelApp
         public Rooms()
         {
             this.InitializeComponent();
-            roomsCollection = GetRooms();
+            roomsCollection = CRoom.GetRooms();
             RoomsListView.ItemsSource = roomsCollection;
+            removeRoomButton.IsEnabled = false;
         }
 
         string connectionString = @"Data Source=DESKTOP-B3VTSNV\SQLEXPRESS;Initial Catalog=HoteAppDB;Integrated Security=SSPI";
 
         public ObservableCollection<CRoom> roomsCollection = new ObservableCollection<CRoom>();
+        public ObservableCollection<CRoomType> roomTypes = new ObservableCollection<CRoomType>();
 
         string tempRoomNumber = "";
         string tempRoomDefaultPrice = "";
@@ -48,7 +50,8 @@ namespace HotelApp
         {
             roomNumberTextBox.Text = tempRoomNumber;
             roomDefaultPriceTextBox.Text = tempRoomDefaultPrice;
-            roomTypeListBox.ItemsSource = GetRoomTypes();
+            roomTypes = GetRoomTypes();
+            roomTypeListBox.ItemsSource = roomTypes;
             roomTypeListBox.SelectedValuePath = "RoomTypeID";
             roomTypeListBox.DisplayMemberPath = "RoomTypeName";
 
@@ -82,7 +85,7 @@ namespace HotelApp
                             Console.WriteLine("Error");
                         }
 
-                        roomsCollection = GetRooms();
+                        roomsCollection = CRoom.GetRooms();
                         RoomsListView.ItemsSource = roomsCollection;
                     }
                 }
@@ -183,54 +186,17 @@ namespace HotelApp
             return null;
         }
 
-        public ObservableCollection<CRoom> GetRooms()
-        {
-            const string GetRoomsQuery = "select RoomID, RoomNumber, RoomDefaultPrice, RoomTypeName, SingleBeds, DoubleBeds, Capacity, Description"
-            + " from Rooms join RoomType on Rooms.RoomTypeID = RoomType.RoomTypeID";
-
-            var rooms = new ObservableCollection<CRoom>();
-            try
-            {
-                using (SqlConnection sqlConnection = new SqlConnection(connectionString))
-                {
-                    sqlConnection.Open();
-                    if (sqlConnection.State == System.Data.ConnectionState.Open)
-                    {
-                        using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
-                        {
-                            sqlCommand.CommandText = GetRoomsQuery;
-                            using (SqlDataReader reader = sqlCommand.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    var room = new CRoom();
-                                    room.RoomID = reader.GetInt32(0);
-                                    room.RoomNumber = reader.GetString(1);
-                                    room.RoomDefaultPrice = reader.GetDecimal(2);
-                                    room.RoomType.RoomTypeName = reader.GetString(3);
-                                    room.RoomType.SingleBeds = reader.GetInt32(4);
-                                    room.RoomType.DoubleBeds = reader.GetInt32(5);
-                                    room.RoomType.Capacity = reader.GetInt32(6);
-                                    room.RoomType.Description = reader.GetString(7);
-                                    rooms.Add(room);
-                                }
-                            }
-                        }
-                    }
-                }
-                return rooms;
-            }
-            catch (Exception eSql)
-            {
-                var dialog = new MessageDialog("Exception: " + eSql.Message);
-                dialog.ShowAsync();
-            }
-            return null;
-        }
 
         private void RoomsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            removeRoomButton.IsEnabled = true;
+            if(RoomsListView.SelectedIndex < 0)
+            {
+                removeRoomButton.IsEnabled = false;
+            }
+            else
+            {
+                removeRoomButton.IsEnabled = true;
+            }
         }
 
         private void RemoveRoomButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -258,8 +224,62 @@ namespace HotelApp
                 Debug.WriteLine("Exception: " + eSql.Message);
                 return;
             }
-            roomsCollection = GetRooms();
+            roomsCollection = CRoom.GetRooms();
             RoomsListView.ItemsSource = roomsCollection;
+            removeRoomButtonFlyout.Hide();
+        }
+
+        private void TextBox_DigitsOnly(TextBox sender,
+                                          TextBoxBeforeTextChangingEventArgs args)
+        {
+            args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
+        }
+
+        private void RoomTypeListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(roomTypeListBox.SelectedIndex < 0)
+            {
+                removeRoomTypeButton.IsEnabled = false;
+                return;
+            }
+            else
+            {
+                removeRoomTypeButton.IsEnabled = true;
+            }
+            var selectedRoomType = roomTypes[roomTypeListBox.SelectedIndex];
+            roomTypeInfoTextBlock.Text = "Capacity: " + selectedRoomType.Capacity + "\nSingle beds: " + selectedRoomType.SingleBeds + "\nDouble beds: " + selectedRoomType.DoubleBeds;
+        }
+
+        private void removeRoomTypeButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            string selectedRoomTypeID = roomTypeListBox.SelectedValue.ToString();
+            
+            string deleteRoomQuery = "DELETE FROM RoomType WHERE RoomTypeID = " + selectedRoomTypeID;
+
+            try
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+                {
+                    sqlConnection.Open();
+                    if (sqlConnection.State == System.Data.ConnectionState.Open)
+                    {
+                        using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                        {
+                            sqlCommand.CommandText = deleteRoomQuery;
+                            SqlDataReader reader = sqlCommand.ExecuteReader();
+                        }
+                    }
+                }
+            }
+            catch (Exception eSql)
+            {
+                Debug.WriteLine("Exception: " + eSql.Message);
+                return;
+            }
+            roomTypes = GetRoomTypes();
+            roomTypeListBox.ItemsSource = roomTypes;
+            removeRoomTypeButtonFlyout.Hide();
+            removeRoomTypeButton.IsEnabled = false;
         }
     }
 }

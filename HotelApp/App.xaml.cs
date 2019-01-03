@@ -23,14 +23,14 @@ namespace HotelApp
     sealed partial class App : Application
     {
         // Connection string for using Windows Authentication.
-        private string connectionString =
+        private static string connectionString =
             @"Data Source=DESKTOP-B3VTSNV\SQLEXPRESS;Initial Catalog=HoteAppDB;Integrated Security=SSPI";
 
         // This is an example connection string for using SQL Server Authentication.
         // private string connectionString =
         //     @"Data Source=YourServerName\YourInstanceName;Initial Catalog=DatabaseName; User Id=XXXXX; Password=XXXXX";
 
-        public string ConnectionString { get => connectionString; set => connectionString = value; }
+        public static string ConnectionString { get => connectionString; set => connectionString = value; }
 
 
         /// <summary>

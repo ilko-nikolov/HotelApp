@@ -8,5 +8,54 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Grid>
+        <Button x:Name="newReservationButton" Content="Add new reservation" Tapped="NewReservationButton_TappedAsync"/>
 
+        <ContentDialog
+            x:Name="newReservationDialog"
+            Title="New Reservation"
+            PrimaryButtonText="Make reservation"
+            CloseButtonText="Cancel">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <CalendarDatePicker x:Name="checkInDate" Header="Check in Date" DateChanged="CheckInDate_DateChanged" Grid.Column="0">
+
+                    </CalendarDatePicker>
+                    <ComboBox x:Name="roomsComboBox" Header="Room" Width="100" SelectedValuePath="RoomID" DisplayMemberPath="RoomNumber" SelectionChanged="RoomsComboBox_SelectionChanged" Grid.Column="0" Grid.Row="1"/>
+                    <CalendarDatePicker x:Name="checkOutDate" Header="Check out Date" Grid.Column="1" DateChanged="CheckOutDate_DateChanged">
+
+                    </CalendarDatePicker>
+
+                    <CheckBox x:Name="checkInCheckBox" Content="Check In Now" Margin="0,23,0,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                </Grid>
+
+                <TextBox x:Name="firstNameTextBox" Header="Client First Name (required)"/>
+                <TextBox x:Name="familyNameTextBox" Header="Client Family Name (required)"/>
+                <TextBox x:Name="phoneNumberTextBox" Header="Client Phone Number (required)"/>
+                <TextBox x:Name="emailTextBox" Header="Client Email "/>
+                <TextBlock x:Name="infoTextBlock"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,1,0">
+                        <TextBox x:Name="priceTextBox" Header="Price (required)"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="0,0,1,0">
+                        <TextBox x:Name="paidAmountTextBox" Header="Paid amount"/>
+                    </StackPanel>
+                </Grid>
+                
+            </StackPanel>
+        </ContentDialog>
+    </Grid>
 </Page>

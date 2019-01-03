@@ -12,8 +12,8 @@ namespace HotelApp
         public int ReservationID { get; set; }
         public CClient Client = new CClient();
         public CRoom Room = new CRoom();
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTimeOffset StartDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
         public double Price { get; set; }
         public double Paid { get; set; }
         public bool CheckIn { get; set; }
