@@ -31,12 +31,24 @@ namespace HotelApp
         public Reservations()
         {
             this.InitializeComponent();
-            //------ReservationsList.ItemsSource = GetReservations((App.Current as App).ConnectionString);
-            
+            initializeFrame();
 
         }
 
+        private void initializeFrame()
+        {
+            reservations = CReservation.GetAllReservations();
+            reservationsListView.ItemsSource = reservations;
+            filterToggle.IsOn = false;
+            filterDatePicker.Date = DateTime.Today;
+            filterDatePicker.IsEnabled = false;
+            filterCheckIn.IsEnabled = false;
+            filterCheckOut.IsEnabled = false;
+            openReservationButton.IsEnabled = false;
+        }
+
         private ObservableCollection<CRoom> roomsCollection;
+        private ObservableCollection<CReservation> reservations;
 
         private DateTime checkInDateTimeTemp = DateTime.Today;
         private DateTime checkOutDateTimeTemp = DateTime.Today;
@@ -202,7 +214,7 @@ namespace HotelApp
 
                     }
                 }
-
+                initializeFrame();
             }
             else
             {
@@ -244,6 +256,7 @@ namespace HotelApp
                 checkInCheckBox.IsChecked = false;
                 checkInCheckBox.IsEnabled = false;
             }
+            RoomsComboBox_SelectionChanged(null, null);
         }
 
         private void CheckOutDate_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
@@ -254,7 +267,7 @@ namespace HotelApp
                 checkOutDate.IsCalendarOpen = false;
             }
             checkOutDateTimeTemp = checkOutDate.Date.Value.Date;
-
+            RoomsComboBox_SelectionChanged(null, null);
         }
 
         private void RoomsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -279,6 +292,152 @@ namespace HotelApp
             priceTextBox.PlaceholderText = calculatedPrice.ToString("#.##");
         }
 
+        private async void OpenReservationButton_TappedAsync(object sender, TappedRoutedEventArgs e)
+        {
+            CReservation selectedReservation = reservations[reservationsListView.SelectedIndex];
+            editCheckInDate.Date = selectedReservation.StartDate;
+            editCheckOutDate.Date = selectedReservation.EndDate;
+            editCheckIn.IsChecked = selectedReservation.CheckIn;
+            editCheckOut.IsChecked = selectedReservation.CheckOut;
+            editPrice.Text = selectedReservation.Price.ToString("#.##");
+            editPaidAmount.Text = selectedReservation.Paid.ToString("#.##");
+            editInfo.Text = selectedReservation.Client.FirstName + "\n" + selectedReservation.Client.LastName + "\n" +
+                "Phone number:\n" + selectedReservation.Client.PhoneNumber + "\nEmail:\n" + selectedReservation.Client.Email + "\n" +
+                "Room: " + selectedReservation.Room.RoomNumber + "\n" +
+                "Room price: " + selectedReservation.Room.RoomDefaultPrice.ToString("#.##");
+            if(selectedReservation.CheckIn)
+            {
+                editCheckInDate.IsEnabled = false;
+                editCheckIn.IsEnabled = false;
+            } else
+            {
+                editCheckInDate.IsEnabled = true;
+                editCheckIn.IsEnabled = true;
+            }
+            if(editCheckInDate.Date.Value.Date == DateTime.Today)
+            {
+                editCheckOut.IsEnabled = true;
+            }
+            else
+            {
+                editCheckOut.IsEnabled = false;
+            }
+            ContentDialogResult result = await selectedReservationDialog.ShowAsync();
 
+        }
+
+        private void EditCheckInDate_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
+        {
+            if (editCheckInDate.Date == null)
+            {
+                editCheckInDate.Date = checkInDateTimeTemp;
+                editCheckInDate.IsCalendarOpen = false;
+            }
+            checkInDateTimeTemp = editCheckInDate.Date.Value.Date;
+            if(editCheckInDate.Date > editCheckOutDate.Date)
+            {
+                editCheckOutDate.Date = editCheckInDate.Date;
+            }
+            DateTime editCheckInDateTime = editCheckInDate.Date.Value.DateTime;
+            editCheckOutDate.MinDate = editCheckInDateTime;
+            if(editCheckIn.IsChecked == false && editCheckInDate.Date >= DateTime.Today)
+            {
+                editCheckIn.IsEnabled = true;
+            }
+            else
+            {
+                editCheckIn.IsEnabled = false;
+            }
+        }
+
+        private void EditCheckOutDate_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
+        {
+            if (editCheckOutDate.Date == null)
+            {
+                editCheckOutDate.Date = checkOutDateTimeTemp;
+                editCheckOutDate.IsCalendarOpen = false;
+            }
+            checkOutDateTimeTemp = editCheckOutDate.Date.Value.Date;
+
+            if(editCheckOutDate.Date <= DateTime.Today.Date)
+            {
+                editCheckOut.IsEnabled = true;
+            }
+            else
+            {
+                editCheckOut.IsChecked = false;
+                editCheckOut.IsEnabled = false;
+            }
+        }
+
+        private void FilterToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (filterToggle.IsOn)
+            {
+                filterCheckIn.IsEnabled = true;
+                filterCheckOut.IsEnabled = true;
+                filterDatePicker.IsEnabled = true;
+                filterReservations();
+            }
+            else
+            {
+                filterCheckIn.IsEnabled = false;
+                filterCheckOut.IsEnabled = false;
+                filterDatePicker.IsEnabled = false;
+                reservations = CReservation.GetAllReservations();
+                reservationsListView.ItemsSource = reservations;
+
+            }
+        }
+
+        private void filterReservations()
+        {
+            reservations = CReservation.GetFilteredReservations(filterCheckIn.IsChecked, filterCheckOut.IsChecked, filterDatePicker.Date.DateTime);
+            reservationsListView.ItemsSource = reservations;
+        }
+
+        private void FilterCheckIn_Click(object sender, RoutedEventArgs e)
+        {
+            if(filterCheckIn.IsChecked.Value)
+            {
+                filterCheckOut.IsEnabled = true;
+            }
+            else
+            {
+                filterCheckOut.IsChecked = false;
+                filterCheckOut.IsEnabled = false;
+            }
+            filterReservations();
+        }
+
+        private void FilterCheckOut_Click(object sender, RoutedEventArgs e)
+        {
+            filterReservations();
+            if(filterCheckOut.IsChecked.Value)
+            {
+                filterCheckIn.IsEnabled = false;
+            }
+            else
+            {
+                filterCheckIn.IsEnabled = true;
+            }
+        }
+
+        private void FilterDatePicker_DateChanged(object sender, DatePickerValueChangedEventArgs e)
+        {
+            filterReservations();
+        }
+
+        private void ReservationsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(reservationsListView.SelectedIndex < 0)
+            {
+                openReservationButton.IsEnabled = false;
+            }
+            else
+            {
+                openReservationButton.IsEnabled = true;
+            }
+        }
     }
 }

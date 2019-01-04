@@ -8,9 +8,38 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Button x:Name="newReservationButton" Content="Add new reservation" Tapped="NewReservationButton_TappedAsync"/>
 
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal" >
+                <ToggleSwitch x:Name="filterToggle" Header="Enable filters" Margin="10,0,3,0" Toggled="FilterToggle_Toggled"/>
+                <CheckBox x:Name="filterCheckIn" Content="Checked in" Click="FilterCheckIn_Click"/>
+                <CheckBox x:Name="filterCheckOut" Content="Checked out" Click="FilterCheckOut_Click"/>
+                <DatePicker x:Name="filterDatePicker" DayVisible="False" DateChanged="FilterDatePicker_DateChanged"/>
+            </StackPanel>
+            <ListView x:Name="reservationsListView" SelectedValuePath="ReservationID" SelectionChanged="ReservationsListView_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:CReservation">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{x:Bind Room.RoomNumber}" Grid.Column="0" FontSize="40" Margin="3"/>
+                            <StackPanel Grid.Column="1" Orientation="Vertical" Margin="3">
+                                <TextBlock Text="{x:Bind getClientNames()}"/>
+                                <TextBlock Text="{x:Bind getReservationDates()}"/>
+                                <TextBlock Text="{x:Bind getStatus()}"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <RelativePanel>
+                <Button x:Name="openReservationButton" Content="Open reservation" Tapped="OpenReservationButton_TappedAsync" Margin="1" RelativePanel.LeftOf="newReservationButton"/>
+                <Button x:Name="newReservationButton" Content="Add new reservation" Tapped="NewReservationButton_TappedAsync" Margin="1" RelativePanel.AlignRightWithPanel="True"/>
+            </RelativePanel>
+        </StackPanel>
         <ContentDialog
             x:Name="newReservationDialog"
             Title="New Reservation"
@@ -56,6 +85,38 @@
                 </Grid>
                 
             </StackPanel>
+        </ContentDialog>
+
+        <ContentDialog x:Name="selectedReservationDialog"
+            PrimaryButtonText="Edit reservation"
+            CloseButtonText="Close window">
+            <Grid MinWidth="400">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock x:Name="editInfo" Margin="0,0,10,0"/>
+                </StackPanel>
+                <Grid Grid.Column="1" Grid.ColumnSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <CalendarDatePicker x:Name="editCheckInDate" Header="Check in date" Grid.Column="0" Grid.Row="0" Margin="1" DateChanged="EditCheckInDate_DateChanged"/>
+                    <CalendarDatePicker x:Name="editCheckOutDate" Header="Check out date" Grid.Column="1" Grid.Row="0" Margin="1" DateChanged="EditCheckOutDate_DateChanged"/>
+                    <CheckBox x:Name="editCheckIn" Content="Check in" Grid.Column="0" Grid.Row="1" Margin="1"/>
+                    <CheckBox x:Name="editCheckOut" Content="Check out" Grid.Column="1" Grid.Row="1" Margin="1"/>
+                    <TextBox x:Name="editPrice" Header="Price" Grid.Column="0" Grid.Row="2" Margin="1"/>
+                    <TextBox x:Name="editPaidAmount" Header="Paid amount" Grid.Column="1" Grid.Row="2" Margin="1"/>
+                </Grid>
+            </Grid>
         </ContentDialog>
     </Grid>
 </Page>

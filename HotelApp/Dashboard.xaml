@@ -8,7 +8,25 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <StackPanel Margin="20,0,0,0">
+        <TextBlock x:Name="occupiedRoomsTextBlock" FontSize="25"/>
+        <TextBlock x:Name="availableRoomsTextBlock" FontSize="25"/>
+        <Border BorderThickness="1" BorderBrush="LightGray" Margin="1">
+            <StackPanel>
+                <TextBlock Text="Today:" FontSize="20"/>
+                <TextBlock x:Name="todayCheckIns" FontSize="15"/>
+                <TextBlock x:Name="todayCheckOuts" FontSize="15"/>
+            </StackPanel>
 
-    </Grid>
+        </Border>
+        <Border BorderThickness="1" BorderBrush="LightGray" Margin="1">
+            <StackPanel>
+                <TextBlock Text="Tomorrow:" FontSize="20"/>
+                <TextBlock x:Name="tomorrowCheckIns" FontSize="15"/>
+                <TextBlock x:Name="tomorrowCheckOuts" FontSize="15"/>
+            </StackPanel>
+            
+        </Border>
+
+    </StackPanel>
 </Page>
