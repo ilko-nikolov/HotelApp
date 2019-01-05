@@ -53,44 +53,6 @@ namespace HotelApp
         private DateTime checkInDateTimeTemp = DateTime.Today;
         private DateTime checkOutDateTimeTemp = DateTime.Today;
 
-        public ObservableCollection<CReservation> GetReservations(string connectionString)
-        {
-            const string GetReservationsQuery = "select ReservationID, RoomID, Price from Reservations;";
-
-            var reservations = new ObservableCollection<CReservation>();
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    if (conn.State == System.Data.ConnectionState.Open)
-                    {
-                        using (SqlCommand cmd = conn.CreateCommand())
-                        {
-                            cmd.CommandText = GetReservationsQuery;
-                            using (SqlDataReader reader = cmd.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    var reservation = new CReservation();
-                                    reservation.ReservationID = reader.GetInt32(0);
-                                    reservation.Room.RoomNumber = reader.GetString(1);
-                                    reservation.Price = reader.GetInt32(5);
-                                    reservations.Add(reservation);
-                                }
-                            }
-                        }
-                    }
-                }
-                return reservations;
-            }
-            catch (Exception eSql)
-            {
-                Debug.WriteLine("Exception: " + eSql.Message);
-            }
-            return null;
-        }
-
         private async void NewReservationButton_TappedAsync(object sender, TappedRoutedEventArgs e)
         {
             checkInDate.MinDate = DateTime.Today;
@@ -102,10 +64,16 @@ namespace HotelApp
             ContentDialogResult result = await newReservationDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                var checkInDateTime = checkInDate.Date.Value.Date;
+                var checkInDateTime = checkInDate.Date.Value.DateTime;
                 var checkOutDateTime = checkOutDate.Date.Value.DateTime;
                 var selectedRoomID = roomsComboBox.SelectedValue;
                 var firstName = firstNameTextBox.Text;
+				if(roomsComboBox.SelectedIndex < 0)
+				{
+					var dialog = new MessageDialog("Please select a room, before confirming reservation", "Error");
+					await dialog.ShowAsync();
+					return;
+				}
                 if (firstName == "")
                 {
                     var dialog = new MessageDialog("Client first name cannot be empty", "Error");
@@ -324,6 +292,37 @@ namespace HotelApp
             }
             ContentDialogResult result = await selectedReservationDialog.ShowAsync();
 
+            if (result == ContentDialogResult.Primary)
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(App.ConnectionString))
+                {
+                    string sqlQuery = "update Reservations " +
+                                      "set CheckInDate = @CheckInDate, CheckOutDate = @CheckOutDate, " +
+                                      "Price = @Price, Paid = @Paid, CheckIn = @CheckIn, CheckOut = @CheckOut " +
+                                      "where ReservationID = @ReservationID";
+                    using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, sqlConnection))
+                    {
+                        sqlCommand.Parameters.AddWithValue("@CheckInDate", editCheckInDate.Date.Value.DateTime);
+                        sqlCommand.Parameters.AddWithValue("@CheckOutDate", editCheckOutDate.Date.Value.DateTime);
+                        sqlCommand.Parameters.AddWithValue("@Price", editPrice.Text);
+                        sqlCommand.Parameters.AddWithValue("@Paid", editPaidAmount.Text);
+                        sqlCommand.Parameters.AddWithValue("@CheckIn", editCheckIn.IsChecked);
+                        sqlCommand.Parameters.AddWithValue("@CheckOut", editCheckOut.IsChecked);
+                        sqlCommand.Parameters.AddWithValue("@ReservationID", reservationsListView.SelectedValue);
+
+
+                        sqlConnection.Open();
+
+                        int sqlResult = sqlCommand.ExecuteNonQuery();
+
+                        if (sqlResult < 0)
+                        {
+                            Console.WriteLine("Error");
+                        }
+                    }
+                }
+                initializeFrame();
+            }
         }
 
         private void EditCheckInDate_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
